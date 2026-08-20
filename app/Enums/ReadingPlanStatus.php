@@ -2,11 +2,11 @@
 
 namespace App\Enums;
 
-enum ReadingPlanStatus: string
+enum ReadingPlanStatus: int
 {
-    case NotStarted = 'not_started';
-    case InProgress = 'in_progress';
-    case Completed = 'completed';
+    case NotStarted = 0;
+    case InProgress = 1;
+    case Completed = 2;
 
     /**
      * ステータスの日本語ラベルを返す
