@@ -22,7 +22,8 @@ class ReadingPlanController extends Controller
      */
     public function index(Request $request): View
     {
-        $currentStatus = $request->input('status');
+        $inputStatus = $request->input('status');
+        $currentStatus = ($inputStatus !== null && $inputStatus !== '') ? (int) $inputStatus : null;
         $userId = $request->user()->id;
 
         $readingPlans = $this->readingPlanService->getFilteredPlans($userId, $currentStatus);
