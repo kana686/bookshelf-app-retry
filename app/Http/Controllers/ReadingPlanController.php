@@ -12,7 +12,7 @@ class ReadingPlanController extends Controller
 {
     protected ReadingPlanService $readingPlanService;
 
-    public function ReadingPlanController(ReadingPlanService $readingPlanService)
+    public function __construct(ReadingPlanService $readingPlanService)
     {
         $this->readingPlanService = $readingPlanService;
     }
