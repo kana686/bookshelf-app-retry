@@ -16,8 +16,8 @@ class ReadingPlanService
             ->with('book')
             ->orderBy('target_date', 'asc');
 
-        if (! empty($status)) {
-            $query->where('status', $status);
+        if ($status !== null && $status !== '') {
+            $query->where('status', (int) $status);
         }
 
         return $query->get();
