@@ -36,9 +36,7 @@ class ReadingPlanController extends Controller
      */
     public function destroy(Request $request, ReadingPlan $readingPlan): RedirectResponse
     {
-        if ($readingPlan->user_id !== $request->user()->id) {
-            abort(403);
-        }
+        $this->authorize('delete', $readingPlan);
 
         $this->readingPlanService->deletePlan($readingPlan);
 
