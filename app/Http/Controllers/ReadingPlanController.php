@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ReadingPlanRequest;
+use App\Models\Book;
 use App\Models\ReadingPlan;
 use App\Services\ReadingPlanService;
 use Illuminate\Http\RedirectResponse;
@@ -29,6 +31,26 @@ class ReadingPlanController extends Controller
         $readingPlans = $this->readingPlanService->getFilteredPlans($userId, $currentStatus);
 
         return view('reading-plans.index', compact('readingPlans', 'currentStatus'));
+    }
+
+    /**
+     * 新規作成画面の表示
+     */
+    public function create(): View
+    {
+        $books = Book::all();
+
+        return view('reading-plans.create', compact('books'));
+    }
+
+    /**
+     * 登録処理
+     */
+    public function store(ReadingPlanRequest $request): RedirectResponse
+    {
+        $this->readingPlanService->createPlan($request->validated(), $request->user()->id);
+
+        return redirect()->route('reading-plans.index')->with('success', '読書計画を登録しました。');
     }
 
     /**
