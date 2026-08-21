@@ -7,6 +7,7 @@ use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\GenreController;
 use App\Http\Controllers\LikeController;
 use App\Http\Controllers\RankingController;
+use App\Http\Controllers\ReadingPlanController;
 use App\Http\Controllers\RegisteredUserController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ReviewController;
@@ -63,6 +64,15 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+
+    Route::controller(ReadingPlanController::class)->prefix('reading-plans')->group(function () {
+        Route::get('', 'index')->name('reading-plans.index');
+        Route::get('create', 'create')->name('reading-plans.create');
+        Route::get('{readingPlan}/edit', 'edit')->name('reading-plans.edit');
+        Route::put('{readingPlan}', 'update')->name('reading-plans.update');
+        Route::post('{readingPlan}/complete', 'complete')->name('reading-plans.complete');
+        Route::delete('{readingPlan}', 'destroy')->name('reading-plans.destroy');
+    });
 });
 
 // 公開
@@ -75,18 +85,6 @@ Route::controller(BookController::class)->group(function () {
 Route::get('/ranking', [RankingController::class, 'index'])->name('ranking.index');
 
 // 応用編未実装画面ルート
-Route::get('/reading-plans', function () {
-    return '<h1>読書計画一覧</h1><p>現在、こちらの機能は未実装です。</p>';
-})->name('reading-plans.index');
-
-Route::get('/reading-plans/create', function () {
-    return '<h1>読書計画作成</h1><p>現在、こちらの機能は未実装です。</p>';
-})->name('reading-plans.create');
-
-Route::get('/reading-plans/{plan}/edit', function ($plan) {
-    return '<h1>読書計画編集</h1><p>現在、こちらの機能は未実装です。</p>';
-})->name('reading-plans.edit');
-
 Route::get('/notifications', function () {
     return '<h1>通知一覧</h1><p>現在、こちらの機能は未実装です。</p>';
 })->name('notifications.index');
