@@ -24,6 +24,19 @@ class ReadingPlanService
     }
 
     /**
+     * 新規の読書計画を登録する
+     */
+    public function createPlan(array $data, int $userId): ReadingPlan
+    {
+        return ReadingPlan::create([
+            'user_id' => $userId,
+            'book_id' => $data['book_id'],
+            'target_date' => $data['target_date'],
+            'status' => 0,
+        ]);
+    }
+
+    /**
      * 読書計画を削除する
      */
     public function deletePlan(ReadingPlan $readingPlan): void
