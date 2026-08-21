@@ -68,6 +68,7 @@ Route::middleware('auth')->group(function () {
     Route::controller(ReadingPlanController::class)->prefix('reading-plans')->group(function () {
         Route::get('', 'index')->name('reading-plans.index');
         Route::get('create', 'create')->name('reading-plans.create');
+        Route::post('', 'store')->name('reading-plans.store');
         Route::get('{readingPlan}/edit', 'edit')->name('reading-plans.edit');
         Route::put('{readingPlan}', 'update')->name('reading-plans.update');
         Route::post('{readingPlan}/complete', 'complete')->name('reading-plans.complete');
