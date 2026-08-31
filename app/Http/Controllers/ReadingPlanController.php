@@ -54,6 +54,28 @@ class ReadingPlanController extends Controller
     }
 
     /**
+     * 編集画面の表示
+     */
+    public function edit(ReadingPlan $readingPlan): View
+    {
+        $this->authorize('update', $readingPlan);
+
+        return view('reading-plans.edit', compact('readingPlan'));
+    }
+
+    /**
+     * 更新処理
+     */
+    public function update(ReadingPlanRequest $request, ReadingPlan $readingPlan): RedirectResponse
+    {
+        $this->authorize('update', $readingPlan);
+
+        $this->readingPlanService->updatePlan($readingPlan, $request->validated());
+
+        return redirect()->route('reading-plans.index')->with('success', '読書計画を更新しました。');
+    }
+
+    /**
      * 削除処理
      */
     public function destroy(Request $request, ReadingPlan $readingPlan): RedirectResponse

@@ -37,6 +37,18 @@ class ReadingPlanService
     }
 
     /**
+     * 読書計画を更新する
+     */
+    public function updatePlan(ReadingPlan $readingPlan, array $data): ReadingPlan
+    {
+        $readingPlan->update([
+            'target_date' => $data['target_date'],
+        ]);
+
+        return $readingPlan;
+    }
+
+    /**
      * 読書計画を削除する
      */
     public function deletePlan(ReadingPlan $readingPlan): void
