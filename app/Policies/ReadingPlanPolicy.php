@@ -8,6 +8,13 @@ use Illuminate\Auth\Access\Response;
 
 class ReadingPlanPolicy
 {
+    public function update(User $user, ReadingPlan $readingPlan): Response
+    {
+        return $user->id === $readingPlan->user_id
+            ? Response::allow()
+            : Response::deny('自身の作成した読書計画のみ編集できます');
+    }
+
     public function delete(User $user, ReadingPlan $readingPlan): Response
     {
         return $user->id === $readingPlan->user_id
