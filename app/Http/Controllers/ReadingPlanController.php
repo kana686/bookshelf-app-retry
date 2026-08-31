@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ReadingPlanRequest;
+use App\Http\Requests\ReadingPlanUpdateRequest;
 use App\Models\Book;
 use App\Models\ReadingPlan;
 use App\Services\ReadingPlanService;
@@ -66,7 +67,7 @@ class ReadingPlanController extends Controller
     /**
      * 更新処理
      */
-    public function update(ReadingPlanRequest $request, ReadingPlan $readingPlan): RedirectResponse
+    public function update(ReadingPlanUpdateRequest $request, ReadingPlan $readingPlan): RedirectResponse
     {
         $this->authorize('update', $readingPlan);
 
