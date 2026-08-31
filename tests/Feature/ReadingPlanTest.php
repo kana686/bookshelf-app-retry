@@ -118,7 +118,10 @@ class ReadingPlanTest extends TestCase
             'target_date' => '2026-12-31',
         ]);
 
-        $response->assertSessionHasErrors(['book_id']);
+        $response->assertInvalid([
+            'book_id' => '書籍を選択してください',
+        ]);
+
         $this->assertDatabaseCount('reading_plans', 0);
     }
 
@@ -131,7 +134,9 @@ class ReadingPlanTest extends TestCase
             'target_date' => '2026-12-31',
         ]);
 
-        $response->assertSessionHasErrors(['book_id']);
+        $response->assertInvalid([
+            'book_id' => '選択された書籍が存在しません',
+        ]);
         $this->assertDatabaseCount('reading_plans', 0);
     }
 
@@ -145,7 +150,9 @@ class ReadingPlanTest extends TestCase
             'target_date' => '',
         ]);
 
-        $response->assertSessionHasErrors(['target_date']);
+        $response->assertInvalid([
+            'target_date' => '期日を入力してください',
+        ]);
         $this->assertDatabaseCount('reading_plans', 0);
     }
 
@@ -159,7 +166,118 @@ class ReadingPlanTest extends TestCase
             'target_date' => 'not-a-date',
         ]);
 
-        $response->assertSessionHasErrors(['target_date']);
+        $response->assertInvalid([
+            'target_date' => '有効な日付形式で入力してください',
+        ]);
         $this->assertDatabaseCount('reading_plans', 0);
+    }
+
+    public function test_読書計画編集画面が表示される()
+    {
+        $user = User::factory()->create();
+        $readingPlan = ReadingPlan::factory()->create([
+            'user_id' => $user->id,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('reading-plans.edit', $readingPlan));
+
+        $response->assertStatus(200);
+        $response->assertViewIs('reading-plans.edit');
+        $response->assertViewHas('readingPlan', $readingPlan);
+    }
+
+    public function test_他人の読書計画の編集画面にはアクセスできず403エラーになる()
+    {
+        $user = User::factory()->create();
+        $otherUser = User::factory()->create();
+        $otherPlan = ReadingPlan::factory()->create([
+            'user_id' => $otherUser->id,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('reading-plans.edit', $otherPlan));
+
+        $response->assertStatus(403);
+    }
+
+    public function test_未ログイン時に読書計画編集画面にアクセスするとログイン画面に遷移する()
+    {
+        $readingPlan = ReadingPlan::factory()->create();
+
+        $response = $this->get(route('reading-plans.edit', $readingPlan));
+
+        $response->assertRedirect(route('login'));
+    }
+
+    public function test_読書計画の期日を正常に更新できる()
+    {
+        $user = User::factory()->create();
+        $readingPlan = ReadingPlan::factory()->create([
+            'user_id' => $user->id,
+            'target_date' => '2026-05-06',
+        ]);
+
+        $response = $this->actingAs($user)->put(route('reading-plans.update', $readingPlan), [
+            'target_date' => '2026-06-01',
+        ]);
+
+        $response->assertRedirect(route('reading-plans.index'));
+        $response->assertSessionHas('success', '読書計画を更新しました。');
+
+        $this->assertDatabaseHas('reading_plans', [
+            'id' => $readingPlan->id,
+            'target_date' => '2026-06-01',
+        ]);
+    }
+
+    public function test_他人の読書計画は更新できず403エラーになる()
+    {
+        $user = User::factory()->create();
+        $otherUser = User::factory()->create();
+        $otherPlan = ReadingPlan::factory()->create([
+            'user_id' => $otherUser->id,
+            'target_date' => '2026-05-06',
+        ]);
+
+        $response = $this->actingAs($user)->put(route('reading-plans.update', $otherPlan), [
+            'target_date' => '2026-06-01',
+        ]);
+
+        $response->assertStatus(403);
+        $this->assertDatabaseHas('reading_plans', [
+            'id' => $otherPlan->id,
+            'target_date' => '2026-05-06',
+        ]);
+    }
+
+    public function test_更新時に期日が未入力だった場合バリデーションエラーになり更新できない()
+    {
+        $user = User::factory()->create();
+        $readingPlan = ReadingPlan::factory()->create([
+            'user_id' => $user->id,
+        ]);
+
+        $response = $this->actingAs($user)->put(route('reading-plans.update', $readingPlan), [
+            'target_date' => '',
+        ]);
+
+        $response->assertInvalid([
+            'target_date' => '期日を入力してください',
+        ]);
+    }
+
+    public function test_更新時に期日が有効な日付でなかった場合バリデーションエラーになり更新できない()
+    {
+        $user = User::factory()->create();
+        $readingPlan = ReadingPlan::factory()->create([
+            'user_id' => $user->id,
+        ]);
+
+        $response = $this->actingAs($user)->put(route('reading-plans.update', $readingPlan), [
+            'target_date' => 'not-a-date',
+        ]);
+
+        $response->assertInvalid([
+            'target_date' => '有効な日付形式で入力してください',
+        ]);
     }
 }
