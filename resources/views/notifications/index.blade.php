@@ -113,6 +113,13 @@
                             </li>
                         @endforeach
                     </ul>
+
+                    {{-- ページネーションリンク --}}
+                    @if($notifications->hasPages())
+                        <div class="px-6 py-4 bg-white border-t border-gray-100">
+                            {{ $notifications->links() }}
+                        </div>
+                    @endif
                 @endif
             </div>
         </div>
