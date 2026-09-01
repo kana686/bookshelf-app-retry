@@ -24,16 +24,14 @@ class NotificationController extends Controller
 
     public function update(Request $request, string $id)
     {
-        try {
-            $this->notificationService->markAsRead(Auth::user(), $id);
+        $this->authorize('update', $notification);
 
-            if ($request->expectsJson()) {
-                return response()->json(['success' => true]);
-            }
+        $this->notificationService->markAsRead($notification);
 
-            return back()->with('status', '通知を既読にしました。');
-        } catch (ModelNotFoundException $e) {
-            abort(403, 'この通知へのアクセス権限がないか、存在しません。');
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true]);
         }
+
+        return back()->with('status', '通知を既読にしました。');
     }
 }

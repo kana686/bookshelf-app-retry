@@ -19,8 +19,6 @@ class NotificationService
      */
     public function markAsRead(Authenticatable $user, string $notificationId)
     {
-        $notification = $user->notifications()->findOrFail($notificationId);
-
         if (is_null($notification->read_at)) {
             $notification->markAsRead();
         }

@@ -78,7 +78,7 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(NotificationController::class)->prefix('notifications')->group(function () {
         Route::get('', 'index')->name('notifications.index');
-        Route::post('{id}/read', 'update')->name('notifications.read');
+        Route::post('{notification}/read', 'update')->name('notifications.read');
     });
 });
 
