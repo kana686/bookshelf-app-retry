@@ -6,6 +6,7 @@ use App\Http\Controllers\BookIsbnController;
 use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\GenreController;
 use App\Http\Controllers\LikeController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\RankingController;
 use App\Http\Controllers\ReadingPlanController;
 use App\Http\Controllers\RegisteredUserController;
@@ -74,6 +75,11 @@ Route::middleware('auth')->group(function () {
         Route::post('{readingPlan}/complete', 'complete')->name('reading-plans.complete');
         Route::delete('{readingPlan}', 'destroy')->name('reading-plans.destroy');
     });
+
+    Route::controller(NotificationController::class)->prefix('notifications')->group(function () {
+        Route::get('', 'index')->name('notifications.index');
+        Route::post('{notification}/read', 'update')->name('notifications.read');
+    });
 });
 
 // 公開
@@ -84,8 +90,3 @@ Route::controller(BookController::class)->group(function () {
 });
 
 Route::get('/ranking', [RankingController::class, 'index'])->name('ranking.index');
-
-// 応用編未実装画面ルート
-Route::get('/notifications', function () {
-    return '<h1>通知一覧</h1><p>現在、こちらの機能は未実装です。</p>';
-})->name('notifications.index');
