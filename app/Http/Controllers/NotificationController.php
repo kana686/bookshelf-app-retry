@@ -22,7 +22,7 @@ class NotificationController extends Controller
         return view('notifications.index', compact('notifications'));
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, DatabaseNotification $notification)
     {
         $this->authorize('update', $notification);
 

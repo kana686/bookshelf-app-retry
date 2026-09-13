@@ -17,7 +17,7 @@ class NotificationService
     /**
      * 指定した通知を既読にする（所有者チェック含む）
      */
-    public function markAsRead(Authenticatable $user, string $notificationId)
+    public function markAsRead($notification)
     {
         if (is_null($notification->read_at)) {
             $notification->markAsRead();
