@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\ReadingPlan;
 use App\Models\User;
 use App\Notifications\ReadingPlanNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -14,7 +15,8 @@ class NotificationTest extends TestCase
     public function test_自分の通知一覧が正常に表示される(): void
     {
         $user = User::factory()->create();
-        $user->notify(new ReadingPlanNotification);
+        $readingPlan = ReadingPlan::factory()->create(['user_id' => $user->id]);
+        $user->notify(new ReadingPlanNotification($readingPlan, 'three_days_before'));
 
         $response = $this->actingAs($user)->get(route('notifications.index'));
 
@@ -34,8 +36,11 @@ class NotificationTest extends TestCase
         $userA = User::factory()->create();
         $userB = User::factory()->create();
 
-        $userA->notify(new ReadingPlanNotification);
-        $userB->notify(new ReadingPlanNotification);
+        $readingPlanA = ReadingPlan::factory()->create(['user_id' => $userA->id]);
+        $readingPlanB = ReadingPlan::factory()->create(['user_id' => $userB->id]);
+
+        $userA->notify(new ReadingPlanNotification($readingPlanA, 'three_days_before'));
+        $userB->notify(new ReadingPlanNotification($readingPlanB, 'three_days_before'));
 
         $notificationA = $userA->notifications->first();
         $notificationB = $userB->notifications->first();
@@ -43,14 +48,15 @@ class NotificationTest extends TestCase
         $response = $this->actingAs($userA)->get(route('notifications.index'));
 
         $response->assertStatus(200);
-        $response->assertSee($notificationA->data['message'] ?? '通知');
+        $response->assertSee($notificationA->data['title'] ?? '通知');
         $response->assertDontSee($notificationB->id);
     }
 
     public function test_自分の通知を正常に既読にできる(): void
     {
         $user = User::factory()->create();
-        $user->notify(new ReadingPlanNotification);
+        $readingPlan = ReadingPlan::factory()->create(['user_id' => $user->id]);
+        $user->notify(new ReadingPlanNotification($readingPlan, 'on_due_date'));
         $notification = $user->notifications->first();
 
         $response = $this->actingAs($user)->post(route('notifications.read', $notification));
@@ -66,7 +72,8 @@ class NotificationTest extends TestCase
         $userA = User::factory()->create();
         $userB = User::factory()->create();
 
-        $userB->notify(new ReadingPlanNotification);
+        $readingPlanB = ReadingPlan::factory()->create(['user_id' => $userB->id]);
+        $userB->notify(new ReadingPlanNotification($readingPlanB, 'three_days_after'));
         $notificationB = $userB->notifications->first();
 
         $response = $this->actingAs($userA)->post(route('notifications.read', $notificationB));
@@ -78,7 +85,8 @@ class NotificationTest extends TestCase
     public function test_未ログイン時に通知を既読にしようとするとログイン画面に遷移する(): void
     {
         $user = User::factory()->create();
-        $user->notify(new ReadingPlanNotification);
+        $readingPlan = ReadingPlan::factory()->create(['user_id' => $user->id]);
+        $user->notify(new ReadingPlanNotification($readingPlan, 'three_days_before'));
         $notification = $user->notifications->first();
 
         $response = $this->post(route('notifications.read', $notification));
